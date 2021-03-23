@@ -27,6 +27,8 @@ io.on('connection', (client) => {
         //Enviamos un mensaje solo a los usuarios de la sala conectada
         client.broadcast.to(usuario.sala).emit('listaPersona', personasPorSala)
 
+        client.broadcast.to(usuario.sala).emit('crearMensaje', crearMensaje('Administrador', `${usuario.nombre} entró en el chat`));
+
         callback(personasPorSala);
 
     })
@@ -41,13 +43,15 @@ io.on('connection', (client) => {
 
     })
 
-    client.on('crearMensaje', (data) => {
+    client.on('crearMensaje', (data, callback) => {
 
 
         let persona = usuarios.getPersona(client.id);
 
         let mensaje = crearMensaje(persona.nombre, data.mensaje);
         client.broadcast.to(persona.sala).emit('crearMensaje', mensaje)
+
+        callback(mensaje);
 
 
     })
